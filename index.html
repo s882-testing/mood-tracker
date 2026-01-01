@@ -26,73 +26,6 @@
       min-height: 100vh;
     }
 
-    .login-container {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .login-box {
-      background: white;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      max-width: 400px;
-      width: 100%;
-    }
-
-    .login-title {
-      font-size: 28px;
-      font-weight: 800;
-      text-align: center;
-      margin-bottom: 24px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .login-input {
-      width: 100%;
-      padding: 14px;
-      border: 2px solid #e5e7eb;
-      border-radius: 12px;
-      font-size: 16px;
-      margin-bottom: 16px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
-
-    .login-input:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-
-    .login-btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 16px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    .login-btn:active {
-      transform: scale(0.98);
-    }
-
-    .error-message {
-      color: #ef4444;
-      font-size: 14px;
-      margin-top: 12px;
-      text-align: center;
-    }
-
     .container {
       min-height: 100vh;
       padding: 20px;
@@ -170,12 +103,12 @@
 
     .button-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-top: 16px;
     }
 
-    .export-btn, .import-btn, .logout-btn {
+    .export-btn, .import-btn {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -199,11 +132,7 @@
       background: #3b82f6;
     }
 
-    .logout-btn {
-      background: #ef4444;
-    }
-
-    .export-btn:active, .import-btn:active, .logout-btn:active {
+    .export-btn:active, .import-btn:active {
       transform: scale(0.98);
     }
 
@@ -548,6 +477,76 @@
       stroke-linejoin: round;
     }
 
+    .export-reminder {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+      padding: 16px 20px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .reminder-content {
+      flex: 1;
+    }
+
+    .reminder-title {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .reminder-text {
+      font-size: 14px;
+      opacity: 0.95;
+    }
+
+    .reminder-buttons {
+      display: flex;
+      gap: 8px;
+      margin-left: 12px;
+    }
+
+    .reminder-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .reminder-btn-primary {
+      background: white;
+      color: #d97706;
+    }
+
+    .reminder-btn-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .reminder-btn:active {
+      transform: scale(0.95);
+    }
+
     @media (max-width: 480px) {
       .container {
         padding: 12px;
@@ -564,6 +563,20 @@
       .button-grid {
         grid-template-columns: 1fr;
       }
+
+      .export-reminder {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .reminder-buttons {
+        width: 100%;
+        margin-left: 0;
+      }
+
+      .reminder-btn {
+        flex: 1;
+      }
     }
   </style>
 </head>
@@ -572,9 +585,6 @@
 
   <script type="text/babel">
     const { useState, useEffect } = React;
-
-    // CHANGE THIS PASSWORD TO YOUR OWN!
-    const CORRECT_PASSWORD = "MoodTracker";
 
     // Simple icon components
     const Download = () => (
@@ -593,14 +603,6 @@
       </svg>
     );
 
-    const LogOut = () => (
-      <svg className="icon" viewBox="0 0 24 24">
-        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-        <polyline points="16 17 21 12 16 7"></polyline>
-        <line x1="21" y1="12" x2="9" y2="12"></line>
-      </svg>
-    );
-
     const TrendingUp = () => (
       <svg className="icon" viewBox="0 0 24 24">
         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
@@ -608,54 +610,14 @@
       </svg>
     );
 
-    function LoginScreen({ onLogin }) {
-      const [password, setPassword] = useState('');
-      const [error, setError] = useState('');
-
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        if (password === CORRECT_PASSWORD) {
-          onLogin();
-        } else {
-          setError('Incorrect password');
-          setPassword('');
-        }
-      };
-
-      return (
-        <div className="login-container">
-          <div className="login-box">
-            <h1 className="login-title">2026 Mood Tracker</h1>
-            <form onSubmit={handleSubmit}>
-              <input
-                type="password"
-                className="login-input"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setError('');
-                }}
-                autoFocus
-              />
-              <button type="submit" className="login-btn">
-                Unlock
-              </button>
-              {error && <div className="error-message">{error}</div>}
-            </form>
-          </div>
-        </div>
-      );
-    }
-
     function MoodTracker() {
-      const [isAuthenticated, setIsAuthenticated] = useState(false);
       const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
       const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
       const [moods, setMoods] = useState({});
       const [loading, setLoading] = useState(true);
       const [selectedDate, setSelectedDate] = useState(null);
       const [note, setNote] = useState('');
+      const [showExportReminder, setShowExportReminder] = useState(false);
 
       const moodGrades = {
         'A+': { color: '#22c55e', label: 'A+', desc: 'Positive core memory' },
@@ -670,13 +632,31 @@
         'July', 'August', 'September', 'October', 'November', 'December'];
 
       useEffect(() => {
-        // Check if already authenticated
-        const auth = sessionStorage.getItem('mood-tracker-auth');
-        if (auth === 'true') {
-          setIsAuthenticated(true);
-        }
         loadMoods();
+        checkExportReminder();
       }, []);
+
+      const checkExportReminder = () => {
+        try {
+          const lastExport = localStorage.getItem('mood-tracker-last-export');
+          if (!lastExport) {
+            // Never exported - show reminder after first use
+            setShowExportReminder(true);
+            return;
+          }
+          
+          const lastExportDate = new Date(lastExport);
+          const now = new Date();
+          const daysSinceExport = (now - lastExportDate) / (1000 * 60 * 60 * 24);
+          
+          // Show reminder if it's been more than 14 days
+          if (daysSinceExport > 14) {
+            setShowExportReminder(true);
+          }
+        } catch (error) {
+          console.log('Error checking export reminder:', error);
+        }
+      };
 
       const handleLogin = () => {
         sessionStorage.setItem('mood-tracker-auth', 'true');
@@ -794,6 +774,10 @@
         link.download = `mood-tracker-${new Date().toISOString().split('T')[0]}.json`;
         link.click();
         URL.revokeObjectURL(url);
+        
+        // Record export date and dismiss reminder
+        localStorage.setItem('mood-tracker-last-export', new Date().toISOString());
+        setShowExportReminder(false);
       };
 
       const importData = (event) => {
@@ -854,10 +838,6 @@
         return days;
       };
 
-      if (!isAuthenticated) {
-        return <LoginScreen onLogin={handleLogin} />;
-      }
-
       const stats = calculateStats();
 
       if (loading) {
@@ -893,7 +873,7 @@
                 }
               }}>Next →</button>
             </div>
-            <div className="button-grid">
+            <div className="button-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
               <button className="export-btn" onClick={exportData}>
                 <Download />
                 Export
@@ -901,10 +881,6 @@
               <button className="import-btn" onClick={() => document.getElementById('import-input').click()}>
                 <Upload />
                 Import
-              </button>
-              <button className="logout-btn" onClick={handleLogout}>
-                <LogOut />
-                Lock
               </button>
             </div>
             <input
@@ -915,6 +891,29 @@
               className="hidden-input"
             />
           </div>
+
+          {showExportReminder && (
+            <div className="export-reminder">
+              <div className="reminder-content">
+                <div className="reminder-title">⚠️ Backup Reminder</div>
+                <div className="reminder-text">It's been 2+ weeks since your last export</div>
+              </div>
+              <div className="reminder-buttons">
+                <button 
+                  className="reminder-btn reminder-btn-primary"
+                  onClick={exportData}
+                >
+                  Export Now
+                </button>
+                <button 
+                  className="reminder-btn reminder-btn-secondary"
+                  onClick={() => setShowExportReminder(false)}
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="calendar-container">
             <div className="weekday-header">
