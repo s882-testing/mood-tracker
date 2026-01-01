@@ -929,10 +929,14 @@
           {selectedDate && (
             <div className="mood-selector">
               <div className="selector-title">
-                Select mood for {new Date(selectedDate).toLocaleDateString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric' 
-                })}
+                Select mood for {(() => {
+                  const [year, month, day] = selectedDate.split('-').map(Number);
+                  const date = new Date(year, month - 1, day);
+                  return date.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                  });
+                })()}
               </div>
               <div className="mood-options">
                 {Object.entries(moodGrades).map(([grade, data]) => (
