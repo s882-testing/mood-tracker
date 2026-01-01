@@ -397,6 +397,25 @@
       cursor: not-allowed;
     }
 
+    .close-selector-btn {
+      width: 100%;
+      margin-top: 12px;
+      background: #6b7280;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      touch-action: manipulation;
+    }
+
+    .close-selector-btn:active {
+      transform: scale(0.98);
+    }
+
     .existing-note {
       margin-top: 12px;
       padding: 12px;
@@ -555,7 +574,7 @@
     const { useState, useEffect } = React;
 
     // CHANGE THIS PASSWORD TO YOUR OWN!
-    const CORRECT_PASSWORD = "MoodTracker";
+    const CORRECT_PASSWORD = "myMoodTracker2026";
 
     // Simple icon components
     const Download = () => (
@@ -694,19 +713,29 @@
         const dateKey = date.toISOString().split('T')[0];
         const newMoods = { ...moods };
         
-        if (moods[dateKey]?.grade === grade && !noteText) {
-          delete newMoods[dateKey];
-        } else {
+        if (noteText) {
+          // Saving with note - close selector
           newMoods[dateKey] = {
             grade: grade,
-            note: noteText || moods[dateKey]?.note || ''
+            note: noteText
           };
-        }
-        
-        saveMoods(newMoods);
-        if (!noteText) {
+          saveMoods(newMoods);
           setSelectedDate(null);
           setNote('');
+        } else if (moods[dateKey]?.grade === grade) {
+          // Clicking same mood - remove it
+          delete newMoods[dateKey];
+          saveMoods(newMoods);
+          setSelectedDate(null);
+          setNote('');
+        } else {
+          // Setting new mood - keep selector open for note input
+          newMoods[dateKey] = {
+            grade: grade,
+            note: moods[dateKey]?.note || ''
+          };
+          saveMoods(newMoods);
+          // Keep selectedDate open so note section appears
         }
       };
 
@@ -935,7 +964,7 @@
                     onClick={saveNote}
                     disabled={!moods[selectedDate]}
                   >
-                    Save Note
+                    Save Note & Close
                   </button>
                 </div>
               )}
@@ -946,6 +975,16 @@
                   <div className="existing-note-text">{moods[selectedDate].note}</div>
                 </div>
               )}
+
+              <button 
+                className="close-selector-btn"
+                onClick={() => {
+                  setSelectedDate(null);
+                  setNote('');
+                }}
+              >
+                Close
+              </button>
             </div>
           )}
 
